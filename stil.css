@@ -1,0 +1,46 @@
+#vrednost {
+    font-family: Inconsolata, Consolas, monospace;
+    font-weight: bold;
+    font-size:   16pt;
+    margin:      0 0 1em 0;
+}
+
+#bitovi_okvir_1 {
+  max-width:       360px;
+  display:         flex;
+  flex-direction:  row;
+  justify-content: flex-start;
+  align-items:     stretch;
+  flex-wrap:       wrap;
+  
+}
+
+.bit {
+    width:           40px;
+    height:          40px;
+    border:          solid 1px #aaa;
+    font-family:     Inconsolata, Consolas, monospace;
+    font-weight:     bold;
+    font-size:       16pt;
+
+    display:         flex;
+    flex-direction:  column;
+    justify-content: center;
+    align-items:     center;
+    flex-wrap:       wrap;
+    margin:          0 2px 2px 0;
+
+    cursor:          pointer;
+    background:      #41454a;
+    color:           #fff;
+}
+
+.bit_specijalni {
+    background: #efa;
+    color:      #333;
+}
+
+#utf8_ispis {
+    font-family: Open Sans, Arial, sans-serif;
+    font-size:   24pt;
+}

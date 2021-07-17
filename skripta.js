@@ -137,65 +137,85 @@ function opipavanjeZnaka(z) {
     if(citanjeBitPozicije(z, 2) == 1) d++; else return d;
 }
 
+function dekodiranjeZnakaTip0(znak, niz, paket, stanje) {
+    if(!stanje.paketZapocet) {
+        paket.push(znak);
+        niz.push(decodeUTF8Paket(paket));
+        paket.length = 0;
+    }
+    else {
+        throw "Samostalni ASCII znak ne može biti deo paketa UTF-8 znakova!";
+    }
+}
+
+function dekodiranjeZnakaTip1(znak,niz, paket, stanje) {
+    stanje.prebrojavanje--;
+    if(stanje.paketZapocet) {
+        if(stanje.prebrojavanje >= 0) {
+            paket.push(znak);
+            if(stanje.prebrojavanje == 0) {
+                niz.push(decodeUTF8Paket(paket));
+                stanje.paketZapocet = false;
+                paket.length = 0;
+            }
+        }
+        else {
+            throw "Dopunski UTF-8 znak pojavio se samostalno posle paketa!";
+        }
+    }
+    else {
+            throw "Dopunski UTF-8 znak ne može biti prvi znak u paketu!";
+    }
+}
+
+function dekodiranjeZnakaTip2(znak, niz, paket, stanje) {
+    if(!stanje.paketZapocet) {
+        stanje.prebrojavanje = stanje.tipZnaka - 1;
+        stanje.paketZapocet  = true;
+        paket.push(znak)
+    }
+    else {
+        throw "Otvarajući UTF-8 znak pojavio se na mestu koje nije početak paketa!";
+    }
+}
+
 function decodeUTF8(poruka) {
     let niz           = [];
     let paket         = [];
-    let paketZapocet  = false;
-    let prebrojavanje = 0;
+    
+    let stanje = {
+        paketZapocet:  false,
+        prebrojavanje: 0,
+        tipZnaka:      0
+    }
 
     for(let i = 0; i < poruka.length; i++) {
         
         let znak = poruka[i];
 
-        let tipZnaka = opipavanjeZnaka(znak);
+        stanje.tipZnaka = opipavanjeZnaka(znak);
 
-        if(tipZnaka == 0) {
-            if(!paketZapocet) {
-                paket.push(znak);
-                niz.push(decodeUTF8Paket(paket));
-                paket = [];
-            }
-            else {
-                return "GREŠKA!";
+        try {
+            if(stanje.tipZnaka == 0) {
+                dekodiranjeZnakaTip0(znak, niz, paket, stanje);
+                continue;
             }
 
-            continue;
+            if(stanje.tipZnaka == 1) {
+                dekodiranjeZnakaTip1(znak, niz, paket, stanje);
+                continue;
+            }
+
+            if(stanje.tipZnaka > 1) {
+                dekodiranjeZnakaTip2(znak, niz, paket, stanje);
+            }
         }
-
-        if(tipZnaka == 1) {
-            if(paketZapocet) {
-                prebrojavanje--;
-                if(prebrojavanje >= 0) {
-                    paket.push(znak);
-                    if(prebrojavanje == 0) {
-                        niz.push(decodeUTF8Paket(paket));
-                        paket = [];
-                    }
-                }
-                else {
-                    return "GREŠKA!";
-                }
-            }
-            else {
-                    return "GREŠKA!";
-            }
-
-            continue;
-        }
-        
-        if(tipZnaka > 1) {
-            if(!paketZapocet) {
-                prebrojavanje = tipZnaka - 1;
-                paketZapocet  = true;
-                paket.push(znak)
-            }
-            else {
-                return "GREŠKA!";
-            }
+        catch (greska) {
+            return greska;
         }
     }
     
-    if(paket.length > 0) return "GREŠKA!";
+    if(paket.length > 0) return "GREŠKA2!";
 
     return niz;
 }
@@ -240,4 +260,4 @@ function obrada() {
 }
 
 obrada();
-console.log(decodeUTF8([65, 67, 65, 227, 157, 184]))
+console.log(decodeUTF8([65, 67, 65, 227, 157, 184, 67]))

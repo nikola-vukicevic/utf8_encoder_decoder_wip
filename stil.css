@@ -1,4 +1,5 @@
-#vrednost {
+#vrednost,
+#vrednost_dekodiranje {
     font-family: Inconsolata, Consolas, monospace;
     font-weight: bold;
     font-size:   16pt;
@@ -40,7 +41,8 @@
     color:      #333;
 }
 
-#utf8_ispis {
+#utf8_ispis,
+#utf8_ispis_dekodiranje {
     font-family: Open Sans, Arial, sans-serif;
     font-size:   24pt;
 }

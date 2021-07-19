@@ -9,7 +9,7 @@ let SPECIJALNI  = []
 
 function inicijalizacijaMape() {
     return [
-        0, 127, 2047, 65535, 1214111
+        0, 127, 2047, 65535, 2097151, 67108863
     ];
 }
 
@@ -93,7 +93,7 @@ function racunanjeStepena(n) {
     return s;
 }
 
-// Kada se pronađe "legitiman" niz znakova koji tvore
+// Kada se pronađe 'legitiman' niz znakova koji tvore
 // UNICODE znak po UTF-8 standardu
 
 function decodeUTF8Paket(niz) {
@@ -139,7 +139,7 @@ function opipavanjeZnaka(z) {
 
 function dekodiranjeZnakaTip0(znak, niz, paket, stanje) {
     if(!stanje.paketZapocet) {
-        paket.push(znak);
+        paket.push(parseInt(znak));
         niz.push(decodeUTF8Paket(paket));
         paket.length = 0;
     }
@@ -215,7 +215,7 @@ function decodeUTF8(poruka) {
         }
     }
     
-    if(paket.length > 0) return "GREŠKA2!";
+    if(paket.length > 0) return "Dekodiranje UTF-8 znaka je započeto, ali, nije završeno!";
 
     return niz;
 }
@@ -259,5 +259,26 @@ function obrada() {
     document.getElementById("utf8_ispis").innerHTML = `&#${vrednost};`;
 }
 
+function obradaDekodiranje() {
+	let v = document.getElementById("vrednost_dekodiranje").value.trim();
+	let i = document.getElementById("utf8_ispis_dekodiranje");
+
+		
+	let niz = v.split(' ').filter(x => x != "");
+	let p   = decodeUTF8(niz);
+	
+	if(typeof(p) === 'string') {
+		i.innerHTML = p;
+		return;
+	}
+	
+	let s   = "";
+	
+	p.forEach(x => {
+		s += `&#${x}; `;
+	});
+	i.innerHTML = s;
+}
+
 obrada();
-console.log(decodeUTF8([65, 67, 65, 227, 157, 184, 67]))
+obradaDekodiranje();
